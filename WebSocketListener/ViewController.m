@@ -93,6 +93,9 @@
     
     BOOL isAudioCommand = [msg hasPrefix:@"AUDIO:"];
     BOOL isMouseCommand = [msg hasPrefix:@"MOUSE:"];
+    BOOL isLeftClickCommand = [msg hasPrefix:@"LCLIK:"];
+    BOOL isRightClickCommand = [msg hasPrefix:@"RCLIK:"];
+    ///CLICK:Left
     
     if ([msg isEqualToString:@"--heartbeat--"]) {
             // ignore for now.
@@ -136,6 +139,44 @@
         NSString* cmdArgs = [msg substringWithRange:range_arguments];
         
         NSString* args = [NSString stringWithFormat: @"m:%@", cmdArgs];
+        
+        NSPipe *pipe = [NSPipe pipe];
+        NSFileHandle *file = pipe.fileHandleForReading;
+        NSTask *task = [[NSTask alloc] init];
+        task.launchPath = @"/usr/local/bin/cliclick";
+        task.arguments = @[args];
+        task.standardOutput = pipe;
+        [task launch];
+        NSData *data = [file readDataToEndOfFile];
+        [file closeFile];
+        NSString *grepOutput = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+        [self sendToMessageStack:grepOutput];
+    }
+    else if (isLeftClickCommand) {
+        NSUInteger i = msg.length - 6;
+        NSRange range_arguments = NSMakeRange(6, i);
+        NSString* cmdArgs = [msg substringWithRange:range_arguments];
+        
+        NSString* args = [NSString stringWithFormat: @"c:%@", cmdArgs];
+        
+        NSPipe *pipe = [NSPipe pipe];
+        NSFileHandle *file = pipe.fileHandleForReading;
+        NSTask *task = [[NSTask alloc] init];
+        task.launchPath = @"/usr/local/bin/cliclick";
+        task.arguments = @[args];
+        task.standardOutput = pipe;
+        [task launch];
+        NSData *data = [file readDataToEndOfFile];
+        [file closeFile];
+        NSString *grepOutput = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+        [self sendToMessageStack:grepOutput];
+    }
+    else if (isRightClickCommand) {
+        NSUInteger i = msg.length - 6;
+        NSRange range_arguments = NSMakeRange(6, i);
+        NSString* cmdArgs = [msg substringWithRange:range_arguments];
+        
+        NSString* args = [NSString stringWithFormat: @"rc:%@", cmdArgs];
         
         NSPipe *pipe = [NSPipe pipe];
         NSFileHandle *file = pipe.fileHandleForReading;
