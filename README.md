@@ -1,5 +1,6 @@
 # macOS-Remote-Control-Server
-Control the mouse with the complimentary iOS app macOS-Remote-Control-Client
+Control the mouse with the complimentary iOS app iOS-Remote-Control-Client
+https://github.com/MattAndrzejczuk/iOS-Remote-Control-Client
 
 #### macOS Requirements:
 - homebrew
